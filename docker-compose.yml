@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+      web:
+            image: nginx
+            ports:
+                  - "8080:80"
+            volumes:
+                  - ./html:/html
+                  - ./conf.d:/etc/nginx/conf.d
+            networks:
+                  - lnmp_net
+      php:
+            build: ./php
+            volumes:
+                  - ./html:/html
+            expose:
+                  - 9000
+            networks:
+                  - lnmp_net
+            links:
+                  - db
+      db:
+            image: mysql
+            command: --default-authentication-plugin=mysql_native_password
+            restart: always
+            volumes:
+                  - ./data:/var/lib/mysql
+            environment:
+                  MYSQL_ROOT_PASSWORD: mysql12345678
+                  MYSQL_DATABASE: test
+                  PMA_HOST: mysql
+            networks:
+                  - lnmp_net
+networks:
+    lnmp_net:
